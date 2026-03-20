@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Portal B2B de Pedidos Mayoristas - Catálogo profesional con categorías, gestión de stock y pedidos online" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>WebPedidos - Portal B2B Mayorista</title>
+    <!-- Google Maps API — replace YOUR_GOOGLE_MAPS_API_KEY with your real key -->
+    <!-- Get one at: https://console.cloud.google.com/ (enable Maps JS API + Places API) -->
+    <script>
+      window.googleMapsLoaded = false;
+      window.initGoogleMaps = function () {
+        window.googleMapsLoaded = true;
+        window.dispatchEvent(new Event('googlemapsloaded'));
+      };
+    </script>
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcjTWwaZP_h7-3EQBeTCmscxw8022kd3w&libraries=places&callback=initGoogleMaps"
+    ></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
