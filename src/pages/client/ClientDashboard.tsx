@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useCallback, useMemo } from 'react';
 import CircularGallery from '../../components/CircularGallery';
 import { BentoGrid, BentoGridItem } from '../../components/ui/bento-grid';
+import { ThreeDMarquee } from '../../components/ui/3d-marquee';
 import {
   Wine, UtensilsCrossed, SprayCan, Package, HeartPulse,
   ArrowRight, ChevronDown, ChevronUp, Truck, Clock,
@@ -100,25 +101,46 @@ const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>(
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 animate-fade-in space-y-10">
 
       {/* ── Hero ──────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-xl bg-[#0C1E35] text-white">
-        {/* Subtle blue glow — no dot grid */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 75% 50%, rgba(26,71,214,0.35) 0%, transparent 65%)' }}
-        />
-        <div className="relative z-10 flex flex-col items-center text-center px-8 py-12 lg:py-16">
+      <div className="relative overflow-hidden rounded-2xl bg-[#0C1E35] text-white" style={{ minHeight: '420px' }}>
+        {/* ThreeDMarquee fills the background */}
+        <div className="absolute inset-0">
+          <ThreeDMarquee
+            images={[
+              'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1521986329282-0436c1f1e212?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=300&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=300&h=200&fit=crop',
+            ]}
+            className="w-full h-full"
+          />
+        </div>
+
+        {/* Overlay content */}
+        <div className="relative z-20 flex flex-col items-center text-center px-8 py-14 lg:py-20">
           <p className="text-xs font-semibold text-primary-300 uppercase tracking-widest mb-4">
             {t('clientDashboard.portalB2B')}
           </p>
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight drop-shadow-2xl">
             {t('clientDashboard.welcome')}
           </h1>
-          <p className="text-white/50 text-base mb-8 leading-relaxed max-w-xl">
+          <p className="text-white/70 text-base mb-8 leading-relaxed max-w-xl drop-shadow">
             {t('clientDashboard.subtitle')}
           </p>
           <button
             onClick={() => navigate('/catalog')}
-            className="inline-flex items-center gap-2.5 bg-white text-[#0C1E35] font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-base shadow-lg"
+            className="inline-flex items-center gap-2.5 bg-white text-[#0C1E35] font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-base shadow-xl"
           >
             {t('clientDashboard.browseAll')}
             <ArrowRight className="w-5 h-5" />
