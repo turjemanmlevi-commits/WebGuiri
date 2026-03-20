@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef, useCallback, useMemo } from 'react';
 import CircularGallery from '../../components/CircularGallery';
-import MagicBento from '../../components/MagicBento';
+import { BentoGrid, BentoGridItem } from '../../components/ui/bento-grid';
 import {
   Wine, UtensilsCrossed, SprayCan, Package, HeartPulse,
   ArrowRight, ChevronDown, ChevronUp, Truck, Clock,
@@ -52,7 +52,7 @@ export default function ClientDashboard() {
   const { addItem } = useCart();
   const { orders } = useOrders();
 
-  const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>({});
+const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>({});
   const [addedItems, setAddedItems]           = useState<Record<string, boolean>>({});
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -76,18 +76,6 @@ export default function ClientDashboard() {
     drogueria:    ['higiene', 'capilar', 'dental'],
   };
 
-  const bentoItems = useMemo(() => [
-    { title: t('categoryNames.allCategories'), label: t('clientDashboard.shopByCategory'), categoryId: 'all' },
-    ...activeCategories.map(cat => {
-      const key = (cat as any).key as string;
-      const sublabels = SUBCATEGORY_LABELS[key] ?? [];
-      return {
-        title: t(`categoryNames.${key}`, cat.name),
-        label: sublabels.map(k => t(`categoryNames.${k}`, k)).join(' · '),
-        categoryId: cat.id,
-      };
-    }),
-  ], [activeCategories, t]);
 
   const scroll = useCallback((catId: string, dir: 'left' | 'right') => {
     const el = rowRefs.current[catId];
@@ -145,17 +133,72 @@ export default function ClientDashboard() {
           <h2 className="text-xl font-bold text-surface-900 mb-1">{t('clientDashboard.shopByCategory')}</h2>
         </div>
 
-        <MagicBento
-          items={bentoItems}
-          enableStars
-          enableSpotlight
-          enableBorderGlow
-          clickEffect
-          glowColor="26, 71, 214"
-          particleCount={10}
-          spotlightRadius={300}
-          onItemClick={(catId) => navigate(catId === 'all' ? '/catalog' : `/catalog?category=${catId}`)}
-        />
+        <BentoGrid className="auto-rows-[180px]">
+          {/* All Categories — spans 2 cols × 2 rows (biggest card) */}
+          <BentoGridItem
+            className="md:col-span-2 md:row-span-2"
+            title={t('categoryNames.allCategories')}
+            description={t('clientDashboard.shopByCategory')}
+            icon={<Package className="w-4 h-4 text-primary-600" />}
+            onClick={() => navigate('/catalog')}
+            header={
+              <div className="relative w-full h-full overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0C1E35] via-[#1a3a5c] to-[#1a47d6]" />
+                <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 70% 30%, rgba(26,71,214,0.5) 0%, transparent 70%)' }} />
+                <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4 opacity-20">
+                  {Object.values(CATEGORY_IMAGES).map((src, i) => (
+                    <div key={i} className="rounded-lg overflow-hidden">
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                  <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center mb-4 shadow-lg">
+                    <Package className="w-7 h-7 text-white" />
+                  </div>
+                  <p className="text-2xl font-bold text-white mb-1">{t('categoryNames.allCategories')}</p>
+                  <p className="text-white/60 text-sm">{activeCategories.length} {t('catalog.categories').toLowerCase()}</p>
+                </div>
+              </div>
+            }
+          />
+
+          {/* Individual categories */}
+          {activeCategories.map(cat => {
+            const key = (cat as any).key as string;
+            const Icon = iconMap[key] || Package;
+            const imgSrc = CATEGORY_IMAGES[key];
+            const sublabels = SUBCATEGORY_LABELS[key] ?? [];
+            const gradients: Record<string, string> = {
+              bebidas:      'from-blue-900 to-blue-600',
+              alimentacion: 'from-emerald-900 to-emerald-600',
+              limpieza:     'from-sky-900 to-sky-600',
+              menaje:       'from-amber-900 to-amber-600',
+              drogueria:    'from-rose-900 to-rose-600',
+            };
+            return (
+              <BentoGridItem
+                key={cat.id}
+                title={t(`categoryNames.${key}`, cat.name)}
+                description={sublabels.map(k => t(`categoryNames.${k}`, k)).join(' · ')}
+                icon={<Icon className="w-4 h-4 text-primary-600" />}
+                onClick={() => navigate(`/catalog?category=${cat.id}`)}
+                header={
+                  <div className="relative w-full h-full overflow-hidden">
+                    {imgSrc && <img src={imgSrc} alt={cat.name} className="w-full h-full object-cover" />}
+                    <div className={`absolute inset-0 bg-gradient-to-t ${gradients[key] ?? 'from-gray-900 to-gray-600'} opacity-60`} />
+                    <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
+                        <Icon className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <span className="text-white font-semibold text-sm drop-shadow">{t(`categoryNames.${key}`, cat.name)}</span>
+                    </div>
+                  </div>
+                }
+              />
+            );
+          })}
+        </BentoGrid>
 
       </section>
 

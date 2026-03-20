@@ -4,6 +4,7 @@ import { ArrowRight, Eye, EyeOff, Sparkles, Search, ShoppingCart, ClipboardCheck
 import { useState } from 'react';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useAuth } from '../../store/authStore';
+import { ThreeDMarquee } from '../../components/ui/3d-marquee';
 
 export default function ClientLogin() {
   const { t } = useTranslation();
@@ -58,21 +59,45 @@ export default function ClientLogin() {
             <LanguageSwitcher dark />
           </div>
 
-          {/* Hero text */}
-          <div>
-            <p className="text-xs font-bold text-primary-400 uppercase tracking-widest mb-4">{t('clientDashboard.portalB2B')}</p>
-            <h2 className="text-4xl font-bold text-white leading-tight mb-4">
-              {t('auth.loginHero')}
-            </h2>
-            <p className="text-white/60 text-base leading-relaxed">
-              {t('auth.loginDescription')}
-            </p>
+          {/* ThreeDMarquee + title overlay */}
+          <div className="relative flex-1 min-h-0 rounded-2xl overflow-hidden">
+            <ThreeDMarquee
+              images={[
+                'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1521986329282-0436c1f1e212?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=300&h=200&fit=crop',
+                'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=300&h=200&fit=crop',
+              ]}
+              className="w-full h-full"
+            />
+            {/* Title overlay centered on the marquee */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
+              <p className="text-[11px] font-bold text-primary-400 uppercase tracking-widest mb-3">{t('clientDashboard.portalB2B')}</p>
+              <h2 className="text-4xl font-extrabold text-white leading-tight drop-shadow-2xl mb-3">
+                Precious Spain
+              </h2>
+              <p className="text-white/70 text-sm leading-relaxed max-w-xs drop-shadow-lg">
+                {t('auth.loginDescription')}
+              </p>
+            </div>
           </div>
 
-          {/* How it works — cards fill the remaining space */}
-          <div className="flex flex-col flex-1 min-h-0">
+          {/* How it works — cards */}
+          <div className="flex flex-col min-h-0">
             <p className="text-xs font-bold text-primary-400 uppercase tracking-widest mb-4">{t('auth.howItWorksLabel')}</p>
-            <div className="grid grid-cols-2 gap-4 flex-1">
+            <div className="grid grid-cols-2 gap-3">
 
               {/* Step 1 — Catalog */}
               <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col">

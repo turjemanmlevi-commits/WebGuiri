@@ -40,3 +40,5 @@ lerna-debug.log*
 
 # Misc
 *.local
+
+.vercel
