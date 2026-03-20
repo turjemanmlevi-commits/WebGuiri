@@ -140,27 +140,37 @@ export default function Catalog() {
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6 animate-fade-in">
 
-      {/* Category Tabs */}
-      <div className="mb-1 overflow-x-auto">
-        <div className="flex items-center gap-0.5 border-b border-surface-200 min-w-max">
+      {/* Category Bubbles */}
+      <div className="mb-4 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 min-w-max">
           <button
             onClick={() => setCategory('')}
-            className={selectedCategory === '' ? 'category-tab-active' : 'category-tab'}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-150 whitespace-nowrap ${
+              selectedCategory === ''
+                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                : 'bg-white text-surface-600 border-surface-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50'
+            }`}
           >
             {t('categoryNames.allCategories')}
           </button>
           {mockCategories.filter(c => c.active).map(cat => {
             const Icon   = iconMap[cat.icon] || Package;
             const catKey = (cat as any).key as string;
+            const count  = products.filter(p => p.categoryId === cat.id && p.active).length;
+            const active = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setCategory(cat.id)}
-                className={`${selectedCategory === cat.id ? 'category-tab-active' : 'category-tab'} flex items-center gap-1.5`}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-150 whitespace-nowrap ${
+                  active
+                    ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                    : 'bg-white text-surface-600 border-surface-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50'
+                }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {t(`categoryNames.${catKey}`, cat.name)}
-                <span className="text-[11px] opacity-40">({products.filter(p => p.categoryId === cat.id && p.active).length})</span>
+                <span className={`text-[11px] ${active ? 'text-white/70' : 'text-surface-400'}`}>({count})</span>
               </button>
             );
           })}
