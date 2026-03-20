@@ -1,18 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import CircularGallery from '../../components/CircularGallery';
 import { BentoGrid, BentoGridItem } from '../../components/ui/bento-grid';
 import { ThreeDMarquee } from '../../components/ui/3d-marquee';
 import {
   Wine, UtensilsCrossed, SprayCan, Package, HeartPulse,
   ArrowRight, ChevronDown, ChevronUp, Truck, Clock,
-  ShoppingCart, Plus, Check, X, ChevronLeft,
 } from 'lucide-react';
 import { mockCategories } from '../../data/mockData';
-import { Product, getStockLevel } from '../../types';
-import { useProducts } from '../../store/productsStore';
-import { useCart } from '../../store/cartStore';
 import { useOrders } from '../../store/ordersStore';
 
 const iconMap: Record<string, any> = {
@@ -31,8 +27,6 @@ const statusStyles: Record<string, string> = {
   cancelled:             'bg-red-50 text-red-700 border-red-200',
 };
 
-const SCROLL_AMOUNT = 660;
-
 const CATEGORY_IMAGES: Record<string, string> = {
   // Bebidas — botellas de vino / bebidas coloridas
   bebidas:      'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=800&h=600&fit=crop',
@@ -46,18 +40,20 @@ const CATEGORY_IMAGES: Record<string, string> = {
   drogueria:    'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=800&h=600&fit=crop',
 };
 
+const SUBCATEGORY_LABELS: Record<string, string[]> = {
+  bebidas:      ['aguas', 'refrescos', 'cervezas'],
+  alimentacion: ['conservas', 'lacteos', 'snacks'],
+  limpieza:     ['detergentes', 'desinfectantes', 'papel'],
+  menaje:       ['vasos', 'cubiertos', 'servilletas'],
+  drogueria:    ['higiene', 'capilar', 'dental'],
+};
+
 export default function ClientDashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { products } = useProducts();
-  const { addItem } = useCart();
   const { orders } = useOrders();
 
-const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>({});
-  const [addedItems, setAddedItems]           = useState<Record<string, boolean>>({});
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
 
   const activeCategories = mockCategories.filter(c => c.active);
 
@@ -69,30 +65,8 @@ const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>(
     })),
   [activeCategories, t]);
 
-  const SUBCATEGORY_LABELS: Record<string, string[]> = {
-    bebidas:      ['aguas', 'refrescos', 'cervezas'],
-    alimentacion: ['conservas', 'lacteos', 'snacks'],
-    limpieza:     ['detergentes', 'desinfectantes', 'papel'],
-    menaje:       ['vasos', 'cubiertos', 'servilletas'],
-    drogueria:    ['higiene', 'capilar', 'dental'],
-  };
-
-
-  const scroll = useCallback((catId: string, dir: 'left' | 'right') => {
-    const el = rowRefs.current[catId];
-    if (el) el.scrollBy({ left: dir === 'left' ? -SCROLL_AMOUNT : SCROLL_AMOUNT, behavior: 'smooth' });
-  }, []);
-
   const toggleOrder = (id: string) =>
     setExpandedOrders(prev => ({ ...prev, [id]: !prev[id] }));
-
-  const handleQuickAdd = (product: Product, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    if (product.stock === 0) return;
-    addItem(product, 1);
-    setAddedItems(prev => ({ ...prev, [product.id]: true }));
-    setTimeout(() => setAddedItems(prev => ({ ...prev, [product.id]: false })), 1500);
-  };
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
@@ -362,212 +336,8 @@ const [expandedOrders, setExpandedOrders]   = useState<Record<string, boolean>>(
           />
         </div>
 
-        {/* Per-category product carousels */}
-        <div className="space-y-8">
-          {activeCategories.map(cat => {
-            const Icon        = iconMap[cat.icon] || Package;
-            const catKey      = (cat as any).key as string;
-            const catProducts = products.filter(p => p.active && p.categoryId === cat.id);
-            if (catProducts.length === 0) return null;
-
-            return (
-              <div key={cat.id}>
-                {/* Row header */}
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary-50 border border-primary-100 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-primary-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-surface-900">
-                      {t(`categoryNames.${catKey}`, cat.name)}
-                    </h3>
-                    <p className="text-xs text-surface-400">{catProducts.length} {t('clientDashboard.productsAvailable')}</p>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => scroll(cat.id, 'left')}
-                      className="w-7 h-7 rounded-md border border-surface-200 bg-white hover:bg-surface-50 flex items-center justify-center transition-colors shadow-sm"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5 text-surface-500" />
-                    </button>
-                    <button
-                      onClick={() => scroll(cat.id, 'right')}
-                      className="w-7 h-7 rounded-md border border-surface-200 bg-white hover:bg-surface-50 flex items-center justify-center transition-colors shadow-sm"
-                    >
-                      <ArrowRight className="w-3.5 h-3.5 text-surface-500" />
-                    </button>
-                    <button
-                      onClick={() => navigate(`/catalog?category=${cat.id}`)}
-                      className="hidden sm:flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 font-medium border border-primary-200 hover:border-primary-300 rounded-md px-2.5 py-1.5 transition-colors bg-white"
-                    >
-                      {t('dashboard.viewAll')} <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Horizontal scroll */}
-                <div
-                  ref={el => { rowRefs.current[cat.id] = el; }}
-                  className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1"
-                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                  {catProducts.map(product => {
-                    const isOut   = product.stock === 0;
-                    const isAdded = addedItems[product.id];
-                    const level   = getStockLevel(product.stock);
-
-                    return (
-                      <div
-                        key={product.id}
-                        onClick={() => setSelectedProduct(product)}
-                        className={`flex-shrink-0 w-44 bg-white rounded-lg overflow-hidden border border-surface-200 hover:border-surface-300 hover:shadow-card-hover transition-all duration-150 cursor-pointer ${isOut ? 'opacity-60' : ''}`}
-                      >
-                        {/* Image */}
-                        <div className="h-28 bg-white flex items-center justify-center relative overflow-hidden border-b border-surface-100">
-                          {product.imageUrl ? (
-                            <img
-                              src={product.imageUrl}
-                              alt={product.name}
-                              className="w-full h-full object-contain p-1"
-                              onError={e => {
-                                const img = e.target as HTMLImageElement;
-                                img.style.display = 'none';
-                                const fb = img.parentElement?.querySelector('.fb') as HTMLElement;
-                                if (fb) fb.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <div className="fb absolute inset-0 items-center justify-center" style={{ display: product.imageUrl ? 'none' : 'flex' }}>
-                            <Package className="w-10 h-10 text-surface-200" />
-                          </div>
-                          {/* Stock dot */}
-                          <div className={`absolute bottom-2 right-2 w-2 h-2 rounded-full ${
-                            level === 'out' ? 'bg-red-400' : level === 'low' ? 'bg-amber-400' : 'bg-emerald-400'
-                          }`} />
-                        </div>
-
-                        {/* Info */}
-                        <div className="p-3">
-                          <p className="text-xs font-semibold text-surface-800 leading-tight line-clamp-2 min-h-[2.25rem] mb-1">
-                            {product.name}
-                          </p>
-                          <p className="text-[11px] text-surface-400 mb-2.5 truncate">{product.brand}</p>
-                          <div className="flex items-center justify-between gap-1">
-                            <p className="text-sm font-bold text-surface-900">€{product.price.toFixed(2)}</p>
-                            <button
-                              onClick={e => handleQuickAdd(product, e)}
-                              disabled={isOut}
-                              className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 transition-colors duration-200 ${
-                                isAdded
-                                  ? 'bg-emerald-500 text-white'
-                                  : isOut
-                                  ? 'bg-surface-100 text-surface-300 cursor-not-allowed'
-                                  : 'bg-primary-600 hover:bg-primary-700 text-white'
-                              }`}
-                            >
-                              {isAdded ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Mobile: Ver todo */}
-                <div className="sm:hidden mt-2">
-                  <button
-                    onClick={() => navigate(`/catalog?category=${cat.id}`)}
-                    className="text-xs text-primary-600 font-medium flex items-center gap-1"
-                  >
-                    {t('dashboard.viewAll')} {t(`categoryNames.${catKey}`, cat.name)} <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </section>
 
-      {/* ── Product Detail Modal ──────────────────────────────────── */}
-      {selectedProduct && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          onClick={() => setSelectedProduct(null)}
-        >
-          <div
-            className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden animate-fade-in"
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Image */}
-            <div className="h-56 bg-surface-50 relative overflow-hidden border-b border-surface-100">
-              {selectedProduct.imageUrl ? (
-                <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="w-full h-full object-contain p-4" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Package className="w-20 h-20 text-surface-200" />
-                </div>
-              )}
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="absolute top-3 right-3 w-7 h-7 bg-white border border-surface-200 rounded-full flex items-center justify-center hover:bg-surface-50 shadow-sm transition-colors"
-              >
-                <X className="w-3.5 h-3.5 text-surface-600" />
-              </button>
-              {selectedProduct.brand && (
-                <span className="absolute top-3 left-3 bg-white border border-surface-200 text-xs text-surface-700 font-medium px-2.5 py-1 rounded-full shadow-sm">
-                  {selectedProduct.brand}
-                </span>
-              )}
-            </div>
-
-            <div className="p-6">
-              <p className="text-[11px] text-primary-500 font-mono mb-1 uppercase tracking-wide">{selectedProduct.sku}</p>
-              <h2 className="text-lg font-bold text-surface-900 mb-1">{selectedProduct.name}</h2>
-              <p className="text-xs text-surface-400 mb-3">
-                {selectedProduct.categoryName}{selectedProduct.subcategoryName ? ` › ${selectedProduct.subcategoryName}` : ''}
-              </p>
-
-              {selectedProduct.description && (
-                <p className="text-sm text-surface-600 mb-4 leading-relaxed">{selectedProduct.description}</p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2 mb-5">
-                {(() => {
-                  const level = getStockLevel(selectedProduct.stock);
-                  if (level === 'out') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">{t('stock.noStock')}</span>;
-                  if (level === 'low') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">{t('stock.lowStock')} · {selectedProduct.stock} ud</span>;
-                  return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">{t('stock.inStock')} · {selectedProduct.stock} ud</span>;
-                })()}
-                {selectedProduct.unitMeasure && <span className="px-2 py-0.5 rounded-full text-xs bg-surface-100 text-surface-600">{selectedProduct.unitMeasure}</span>}
-                {selectedProduct.iva !== undefined && <span className="px-2 py-0.5 rounded-full text-xs bg-surface-100 text-surface-600">IVA {selectedProduct.iva}%</span>}
-              </div>
-
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-2xl font-bold text-surface-900">€{selectedProduct.price.toFixed(2)}</p>
-                  <p className="text-xs text-surface-400">{t('catalog.perUnit')}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    handleQuickAdd(selectedProduct);
-                    setTimeout(() => setSelectedProduct(null), 500);
-                  }}
-                  disabled={selectedProduct.stock === 0}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm ${
-                    selectedProduct.stock === 0
-                      ? 'bg-surface-100 text-surface-400 cursor-not-allowed'
-                      : 'bg-primary-600 hover:bg-primary-700 text-white'
-                  }`}
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  {t('catalog.addToOrder')}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
