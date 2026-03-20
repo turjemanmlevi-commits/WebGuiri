@@ -220,48 +220,97 @@ export default function Catalog() {
       <div className="flex flex-col lg:flex-row gap-6 mt-4">
 
         {/* Filters Sidebar */}
-        <aside className={`lg:w-56 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-          <div className="card p-4 space-y-5 sticky top-20">
-            <h3 className="font-semibold text-surface-900 flex items-center gap-2 text-sm">
-              <SlidersHorizontal className="w-4 h-4" /> {t('catalog.filters')}
-            </h3>
+        <aside className={`lg:w-60 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className="sticky top-20 rounded-2xl border border-surface-200 bg-white shadow-sm overflow-hidden">
 
-            <div>
-              <label className="input-label text-xs">{t('catalog.sortBy')}</label>
-              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="input-field text-sm">
-                <option value="name">{t('catalog.sortName')}</option>
-                <option value="priceAsc">{t('catalog.sortPriceAsc')}</option>
-                <option value="priceDesc">{t('catalog.sortPriceDesc')}</option>
-                <option value="stock">{t('catalog.sortStock')}</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="input-label text-xs">{t('catalog.priceRange')}</label>
-              <div className="flex gap-2">
-                <input type="number" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder={t('catalog.min')} className="input-field text-sm" />
-                <input type="number" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder={t('catalog.max')} className="input-field text-sm" />
+            {/* Header */}
+            <div className="flex items-center gap-2.5 px-5 py-4 border-b border-surface-100 bg-surface-50">
+              <div className="w-7 h-7 rounded-lg bg-primary-100 flex items-center justify-center">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-primary-600" />
               </div>
+              <span className="font-bold text-surface-900 text-sm tracking-tight">{t('catalog.filters')}</span>
+              {(inStockOnly || priceMin || priceMax) && (
+                <button
+                  onClick={() => { setInStockOnly(false); setPriceMin(''); setPriceMax(''); }}
+                  className="ml-auto text-[11px] text-primary-600 hover:text-primary-700 font-semibold bg-primary-50 hover:bg-primary-100 px-2 py-0.5 rounded-full transition-colors"
+                >
+                  {t('catalog.showAll')}
+                </button>
+              )}
             </div>
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={inStockOnly}
-                onChange={e => setInStockOnly(e.target.checked)}
-                className="rounded border-surface-300 text-primary-600"
-              />
-              <span className="text-sm text-surface-700">{t('catalog.inStock')}</span>
-            </label>
+            <div className="p-5 space-y-6">
 
-            {(inStockOnly || priceMin || priceMax) && (
-              <button
-                onClick={() => { setInStockOnly(false); setPriceMin(''); setPriceMax(''); }}
-                className="text-xs text-primary-600 hover:text-primary-700 font-medium"
-              >
-                {t('catalog.showAll')}
-              </button>
-            )}
+              {/* Sort */}
+              <div>
+                <p className="text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-2">{t('catalog.sortBy')}</p>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { value: 'name',      label: t('catalog.sortName') },
+                    { value: 'priceAsc',  label: t('catalog.sortPriceAsc') },
+                    { value: 'priceDesc', label: t('catalog.sortPriceDesc') },
+                    { value: 'stock',     label: t('catalog.sortStock') },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setSortBy(opt.value)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                        sortBy === opt.value
+                          ? 'bg-primary-600 text-white shadow-sm'
+                          : 'text-surface-600 hover:bg-surface-100'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-surface-100" />
+
+              {/* Price range */}
+              <div>
+                <p className="text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-2">{t('catalog.priceRange')}</p>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-medium">€</span>
+                    <input
+                      type="number"
+                      value={priceMin}
+                      onChange={e => setPriceMin(e.target.value)}
+                      placeholder={t('catalog.min')}
+                      className="w-full pl-6 pr-2 py-2 text-sm border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-colors"
+                    />
+                  </div>
+                  <div className="flex-1 relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-medium">€</span>
+                    <input
+                      type="number"
+                      value={priceMax}
+                      onChange={e => setPriceMax(e.target.value)}
+                      placeholder={t('catalog.max')}
+                      className="w-full pl-6 pr-2 py-2 text-sm border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-surface-100" />
+
+              {/* In stock toggle */}
+              <label className="flex items-center justify-between cursor-pointer group">
+                <span className="text-sm font-medium text-surface-700 group-hover:text-surface-900 transition-colors">{t('catalog.inStock')}</span>
+                <div
+                  onClick={() => setInStockOnly(!inStockOnly)}
+                  className={`relative w-9 h-5 rounded-full transition-all duration-200 ${inStockOnly ? 'bg-primary-600' : 'bg-surface-200'}`}
+                >
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${inStockOnly ? 'left-4' : 'left-0.5'}`} />
+                </div>
+              </label>
+
+            </div>
           </div>
         </aside>
 
