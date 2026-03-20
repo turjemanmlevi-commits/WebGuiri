@@ -261,11 +261,11 @@ export default function ClientLayout() {
               <div className="w-7 h-7 rounded bg-primary-500/30 border border-primary-400/30 flex items-center justify-center">
                 <ShoppingBag className="w-3.5 h-3.5 text-primary-300" />
               </div>
-              <span className="text-sm font-semibold text-white tracking-tight mobile-only">Home</span>
+              <span className="text-sm font-semibold text-white tracking-tight hidden sm:inline">Precious Spain</span>
             </Link>
 
             {/* Search — hidden on mobile view */}
-            <form onSubmit={handleSearch} className="desktop-only flex-1 max-w-xl">
+            <form onSubmit={handleSearch} className="flex-1 max-w-xl">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
@@ -288,7 +288,7 @@ export default function ClientLayout() {
                 className="relative flex items-center gap-1.5 px-3 py-2 text-white/70 hover:text-white hover:bg-white/8 rounded-lg transition-colors"
               >
                 <ShoppingCart style={{ width: '18px', height: '18px' }} />
-                <span className="hidden sm:inline text-sm font-medium desktop-only">{t('nav.cart')}</span>
+                <span className="hidden sm:inline text-sm font-medium">{t('nav.cart')}</span>
                 {itemCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-amber-400 text-[#0C1E35] text-[10px] font-bold rounded-full flex items-center justify-center">
                     {itemCount > 99 ? '99+' : itemCount}
@@ -299,7 +299,7 @@ export default function ClientLayout() {
               <LanguageSwitcher />
 
               {/* Notifications — desktop only */}
-              <div className="desktop-only relative">
+              <div className="relative">
                 <button
                   onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false); }}
                   className="w-9 h-9 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/8 rounded-lg transition-colors"
