@@ -23,6 +23,7 @@ import ClientDashboard from './pages/client/ClientDashboard';
 import Catalog from './pages/client/Catalog';
 import Cart from './pages/client/Cart';
 import OrderConfirmation from './pages/client/OrderConfirmation';
+import Profile from './pages/client/Profile';
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
             {/* Admin Auth */}

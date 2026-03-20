@@ -272,7 +272,7 @@ export default function ClientLayout() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder={t('common.search')}
-                  className="w-full pl-9 pr-4 py-2 bg-white/8 border border-white/10 rounded-lg text-sm text-white placeholder-white/30 focus:outline-none focus:bg-white/12 focus:border-white/20 transition-colors"
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-white/20 rounded-lg text-sm text-surface-900 placeholder-surface-400 focus:outline-none focus:border-primary-400 transition-colors"
                 />
               </div>
             </form>
@@ -330,27 +330,54 @@ export default function ClientLayout() {
                   </div>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-surface-200 rounded-lg shadow-dropdown overflow-hidden z-50 animate-fade-in">
-                    <div className="px-4 py-3 border-b border-surface-100">
-                      {isGuest ? (
-                        <>
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-surface-200 rounded-xl shadow-dropdown overflow-hidden z-50 animate-fade-in">
+                    {isGuest ? (
+                      <>
+                        <div className="px-4 py-3 border-b border-surface-100">
                           <p className="text-sm font-semibold text-surface-900">Visitante</p>
                           <p className="text-xs text-surface-400">Modo exploración sin precios</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-sm font-semibold text-surface-900">{userEmail?.split('@')[0]}</p>
+                        </div>
+                        <div className="p-2 space-y-1">
+                          <button
+                            onClick={() => { setUserMenuOpen(false); navigate('/'); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 rounded-lg transition-colors font-medium"
+                          >
+                            <LogIn className="w-4 h-4 text-primary-600" />
+                            {t('auth.login')}
+                          </button>
+                          <button
+                            onClick={() => { setUserMenuOpen(false); navigate('/register'); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors font-medium"
+                          >
+                            <UserPlus className="w-4 h-4" />
+                            {t('auth.register')}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="px-4 py-3 border-b border-surface-100">
+                          <p className="text-sm font-semibold text-surface-900">{userProfile?.companyName ?? userEmail?.split('@')[0]}</p>
                           <p className="text-xs text-surface-400">{userEmail}</p>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => { setUserMenuOpen(false); logout(); navigate('/'); }}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      {t('auth.logout')}
-                    </button>
+                        </div>
+                        <div className="p-2 space-y-1">
+                          <button
+                            onClick={() => { setUserMenuOpen(false); navigate('/profile'); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 rounded-lg transition-colors font-medium"
+                          >
+                            <User className="w-4 h-4 text-primary-600" />
+                            Mi perfil
+                          </button>
+                          <button
+                            onClick={() => { setUserMenuOpen(false); logout(); navigate('/'); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            {t('auth.logout')}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

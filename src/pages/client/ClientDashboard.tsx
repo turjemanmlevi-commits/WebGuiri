@@ -1,15 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import CircularGallery from '../../components/CircularGallery';
 import { BentoGrid, BentoGridItem } from '../../components/ui/bento-grid';
 import { ThreeDMarquee } from '../../components/ui/3d-marquee';
 import {
-  Wine, UtensilsCrossed, SprayCan, Package, HeartPulse,
-  ArrowRight, ChevronDown, ChevronUp, Truck, Clock,
+  Wine, UtensilsCrossed, SprayCan, Package, HeartPulse, ArrowRight,
 } from 'lucide-react';
 import { mockCategories } from '../../data/mockData';
-import { useOrders } from '../../store/ordersStore';
 
 const iconMap: Record<string, any> = {
   wine: Wine,
@@ -17,14 +15,6 @@ const iconMap: Record<string, any> = {
   'spray-can': SprayCan,
   package: Package,
   'heart-pulse': HeartPulse,
-};
-
-const statusStyles: Record<string, string> = {
-  pending:               'bg-amber-50 text-amber-700 border-amber-200',
-  authorization_pending: 'bg-orange-50 text-orange-700 border-orange-200',
-  processing:            'bg-blue-50 text-blue-700 border-blue-200',
-  completed:             'bg-emerald-50 text-emerald-700 border-emerald-200',
-  cancelled:             'bg-red-50 text-red-700 border-red-200',
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -51,9 +41,6 @@ const SUBCATEGORY_LABELS: Record<string, string[]> = {
 export default function ClientDashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { orders } = useOrders();
-
-  const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
 
   const activeCategories = mockCategories.filter(c => c.active);
 
@@ -64,12 +51,6 @@ export default function ClientDashboard() {
       categoryId: cat.id,
     })),
   [activeCategories, t]);
-
-  const toggleOrder = (id: string) =>
-    setExpandedOrders(prev => ({ ...prev, [id]: !prev[id] }));
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 animate-fade-in space-y-10">
@@ -203,105 +184,6 @@ export default function ClientDashboard() {
           })}
         </BentoGrid>
 
-      </section>
-
-      {/* ── Recent Orders ─────────────────────────────────────────── */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-surface-900">{t('clientDashboard.recentOrders')}</h2>
-            <p className="text-xs text-surface-400 mt-0.5">{orders.length} pedidos</p>
-          </div>
-          <button
-            onClick={() => navigate('/orders')}
-            className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 font-semibold border border-primary-200 hover:border-primary-400 rounded-md px-3 py-1.5 transition-colors bg-white"
-          >
-            {t('dashboard.viewAll')} <ArrowRight className="w-3 h-3" />
-          </button>
-        </div>
-
-        {orders.length === 0 ? (
-          <p className="text-surface-400 text-sm">{t('clientDashboard.noRecentOrders')}</p>
-        ) : (
-          <div className="card overflow-hidden divide-y divide-surface-100">
-            {orders.map(order => {
-              const isExpanded = expandedOrders[order.id];
-              return (
-                <div key={order.id}>
-                  <button
-                    onClick={() => toggleOrder(order.id)}
-                    className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-surface-50 transition-colors text-left"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-surface-900 truncate">{order.orderId}</p>
-                      <p className="text-xs text-surface-400 mt-0.5 truncate">{order.companyName}</p>
-                    </div>
-                    <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border shrink-0 ${statusStyles[order.status]}`}>
-                      {t(`orders.${order.status}`)}
-                    </span>
-                    <div className="hidden lg:flex items-center gap-1.5 text-xs text-surface-400 shrink-0">
-                      <Truck className="w-3.5 h-3.5" />
-                      {formatDate(order.estimatedDelivery)}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-surface-400 shrink-0">
-                      <Clock className="w-3.5 h-3.5" />
-                      {formatDate(order.createdAt)}
-                    </div>
-                    <p className="text-sm font-bold text-surface-900 shrink-0">€{order.totalAmount.toFixed(2)}</p>
-                    {isExpanded
-                      ? <ChevronUp className="w-4 h-4 text-surface-400 shrink-0" />
-                      : <ChevronDown className="w-4 h-4 text-surface-400 shrink-0" />
-                    }
-                  </button>
-
-                  {isExpanded && (
-                    <div className="bg-surface-50 border-t border-surface-100">
-                      <div className="sm:hidden flex gap-3 px-5 pt-3 pb-1">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusStyles[order.status]}`}>
-                          {t(`orders.${order.status}`)}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-surface-400">
-                          <Truck className="w-3.5 h-3.5" /> {formatDate(order.estimatedDelivery)}
-                        </span>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm min-w-[460px]">
-                          <thead>
-                            <tr className="text-xs text-surface-400 uppercase border-b border-surface-200">
-                              <th className="text-left px-5 py-2">{t('products.name')}</th>
-                              <th className="text-right px-5 py-2">{t('cart.quantity')}</th>
-                              <th className="text-right px-5 py-2">{t('cart.unitPrice')}</th>
-                              <th className="text-right px-5 py-2">{t('cart.subtotal')}</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-surface-100">
-                            {order.items.map((item, i) => (
-                              <tr key={i} className="hover:bg-white transition-colors">
-                                <td className="px-5 py-2.5">
-                                  <p className="font-medium text-surface-800">{item.name}</p>
-                                  <p className="text-xs text-surface-400">{item.categoryName}</p>
-                                </td>
-                                <td className="text-right px-5 py-2.5 text-surface-600">{item.quantity}</td>
-                                <td className="text-right px-5 py-2.5 text-surface-600">€{item.unitPrice.toFixed(2)}</td>
-                                <td className="text-right px-5 py-2.5 font-semibold text-surface-900">€{item.subtotal.toFixed(2)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot>
-                            <tr className="border-t-2 border-surface-200 bg-white">
-                              <td colSpan={3} className="text-right px-5 py-3 text-sm font-medium text-surface-500">Total</td>
-                              <td className="text-right px-5 py-3 font-bold text-surface-900">€{order.totalAmount.toFixed(2)}</td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
       </section>
 
       {/* ── Shop by Category ──────────────────────────────────────── */}
