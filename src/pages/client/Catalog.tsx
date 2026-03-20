@@ -224,91 +224,94 @@ export default function Catalog() {
           <div className="sticky top-20 rounded-2xl border border-surface-200 bg-white shadow-sm overflow-hidden">
 
             {/* Header */}
-            <div className="flex items-center gap-2.5 px-5 py-4 border-b border-surface-100 bg-surface-50">
-              <div className="w-7 h-7 rounded-lg bg-primary-100 flex items-center justify-center">
-                <SlidersHorizontal className="w-3.5 h-3.5 text-primary-600" />
+            <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-[#0C1E35] to-[#1a3a5c]">
+              <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center">
+                <SlidersHorizontal className="w-4 h-4 text-white" />
               </div>
-              <span className="font-bold text-surface-900 text-sm tracking-tight">{t('catalog.filters')}</span>
-              {(inStockOnly || priceMin || priceMax) && (
+              <span className="font-bold text-white text-sm tracking-tight flex-1">{t('catalog.filters')}</span>
+              {(inStockOnly || priceMin || priceMax || sortBy !== 'name') && (
                 <button
-                  onClick={() => { setInStockOnly(false); setPriceMin(''); setPriceMax(''); }}
-                  className="ml-auto text-[11px] text-primary-600 hover:text-primary-700 font-semibold bg-primary-50 hover:bg-primary-100 px-2 py-0.5 rounded-full transition-colors"
+                  onClick={() => { setInStockOnly(false); setPriceMin(''); setPriceMax(''); setSortBy('name'); }}
+                  className="flex items-center gap-1 text-[11px] text-white/80 hover:text-white font-semibold bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full transition-colors border border-white/20"
                 >
-                  {t('catalog.showAll')}
+                  <X className="w-2.5 h-2.5" />
+                  Reset
                 </button>
               )}
             </div>
 
-            <div className="p-5 space-y-6">
+            <div className="p-5 space-y-5">
 
               {/* Sort */}
               <div>
-                <p className="text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-2">{t('catalog.sortBy')}</p>
-                <div className="flex flex-col gap-1">
-                  {[
-                    { value: 'name',      label: t('catalog.sortName') },
-                    { value: 'priceAsc',  label: t('catalog.sortPriceAsc') },
-                    { value: 'priceDesc', label: t('catalog.sortPriceDesc') },
-                    { value: 'stock',     label: t('catalog.sortStock') },
-                  ].map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setSortBy(opt.value)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                        sortBy === opt.value
-                          ? 'bg-primary-600 text-white shadow-sm'
-                          : 'text-surface-600 hover:bg-surface-100'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <label className="block text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-1.5">
+                  {t('catalog.sortBy')}
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm text-surface-800 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                >
+                  <option value="name">{t('catalog.sortName')}</option>
+                  <option value="priceAsc">{t('catalog.sortPriceAsc')}</option>
+                  <option value="priceDesc">{t('catalog.sortPriceDesc')}</option>
+                  <option value="stock">{t('catalog.sortStock')}</option>
+                </select>
               </div>
-
-              {/* Divider */}
-              <div className="h-px bg-surface-100" />
 
               {/* Price range */}
               <div>
-                <p className="text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-2">{t('catalog.priceRange')}</p>
-                <div className="flex gap-2">
+                <label className="block text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-1.5">
+                  {t('catalog.priceRange')}
+                </label>
+                <div className="flex items-center gap-2">
                   <div className="flex-1 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-medium">€</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-semibold pointer-events-none">€</span>
                     <input
                       type="number"
                       value={priceMin}
                       onChange={e => setPriceMin(e.target.value)}
                       placeholder={t('catalog.min')}
-                      className="w-full pl-6 pr-2 py-2 text-sm border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-colors"
+                      className="w-full pl-6 pr-2 py-2.5 text-sm border border-surface-200 rounded-xl bg-surface-50 focus:bg-white focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all"
                     />
                   </div>
+                  <span className="text-surface-300 text-sm">—</span>
                   <div className="flex-1 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-medium">€</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-surface-400 font-semibold pointer-events-none">€</span>
                     <input
                       type="number"
                       value={priceMax}
                       onChange={e => setPriceMax(e.target.value)}
                       placeholder={t('catalog.max')}
-                      className="w-full pl-6 pr-2 py-2 text-sm border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-colors"
+                      className="w-full pl-6 pr-2 py-2.5 text-sm border border-surface-200 rounded-xl bg-surface-50 focus:bg-white focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="h-px bg-surface-100" />
-
-              {/* In stock toggle */}
-              <label className="flex items-center justify-between cursor-pointer group">
-                <span className="text-sm font-medium text-surface-700 group-hover:text-surface-900 transition-colors">{t('catalog.inStock')}</span>
-                <div
-                  onClick={() => setInStockOnly(!inStockOnly)}
-                  className={`relative w-9 h-5 rounded-full transition-all duration-200 ${inStockOnly ? 'bg-primary-600' : 'bg-surface-200'}`}
+              {/* In stock */}
+              <div>
+                <label className="block text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-1.5">
+                  {t('catalog.inStock')}
+                </label>
+                <select
+                  value={inStockOnly ? 'yes' : 'all'}
+                  onChange={e => setInStockOnly(e.target.value === 'yes')}
+                  className="w-full px-3 py-2.5 text-sm text-surface-800 bg-surface-50 border border-surface-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all appearance-none cursor-pointer"
+                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
                 >
-                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${inStockOnly ? 'left-4' : 'left-0.5'}`} />
-                </div>
-              </label>
+                  <option value="all">Todos los productos</option>
+                  <option value="yes">Solo con stock disponible</option>
+                </select>
+              </div>
+
+              {/* Results count */}
+              <div className="pt-1 border-t border-surface-100">
+                <p className="text-[11px] text-surface-400 font-medium text-center">
+                  <span className="font-bold text-surface-700">{filtered.length}</span> {t('catalog.productsFound')}
+                </p>
+              </div>
 
             </div>
           </div>
