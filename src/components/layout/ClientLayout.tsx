@@ -7,7 +7,6 @@ import {
   LogIn, UserPlus, Building2, Phone, MapPin, Mail,
 } from 'lucide-react';
 import LanguageSwitcher from '../LanguageSwitcher';
-import { ViewModeSwitcher } from '../../store/viewModeStore';
 import { useCart } from '../../store/cartStore';
 import { useAuth } from '../../store/authStore';
 import { useState } from 'react';
@@ -25,7 +24,7 @@ export default function ClientLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { getItemCount } = useCart();
-  const { userEmail, isGuest, isLoggedIn, logout, userProfile } = useAuth();
+  const { userEmail, isGuest, logout, userProfile } = useAuth();
   const itemCount = getItemCount();
 
   const [searchQuery, setSearchQuery]           = useState('');
@@ -280,8 +279,6 @@ export default function ClientLayout() {
 
             {/* Right actions */}
             <div className="flex items-center gap-0.5 shrink-0 ml-auto">
-              <ViewModeSwitcher dark />
-
               {/* Cart */}
               <Link
                 to="/cart"
