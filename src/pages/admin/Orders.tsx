@@ -10,11 +10,12 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
 
-  const statusColors = {
-    pending: 'bg-amber-50 text-amber-700 border-amber-200',
-    processing: 'bg-blue-50 text-blue-700 border-blue-200',
-    completed: 'bg-green-50 text-green-700 border-green-200',
-    cancelled: 'bg-red-50 text-red-700 border-red-200',
+  const statusColors: Record<string, string> = {
+    pending:               'bg-amber-50 text-amber-700 border-amber-200',
+    authorization_pending: 'bg-orange-50 text-orange-700 border-orange-200',
+    processing:            'bg-blue-50 text-blue-700 border-blue-200',
+    completed:             'bg-green-50 text-green-700 border-green-200',
+    cancelled:             'bg-red-50 text-red-700 border-red-200',
   };
 
   const filtered = mockOrders.filter(o => {
